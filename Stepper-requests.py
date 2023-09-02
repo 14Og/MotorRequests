@@ -60,14 +60,18 @@ class MotorRequest:
 
     def starting_command(self):
         resp = self.load_json_response(requests.post(f"http://{self.ip_addr}:7125/printer/gcode/script?script=G28 X0 Y0"))
-        if not resp["result"] == "ok":
-            raise ServerError("BAD SERVER REQUEST")
-        else:
-            resp = self.load_json_response(requests.post(f"http://{self.ip_addr}:7125/printer/gcode/script?script=G91"))
+        try:        
             if not resp["result"] == "ok":
                 raise ServerError("BAD SERVER REQUEST")
             else:
-                print("STARTING COMMAND: SUCCESSFULL")
+                resp = self.load_json_response(requests.post(f"http://{self.ip_addr}:7125/printer/gcode/script?script=G91"))
+                if not resp["result"] == "ok":
+                    raise ServerError("BAD SERVER REQUEST")
+                else:
+                    print("STARTING COMMAND: SUCCESSFULL")
+        except KeyError:
+            raise ServerError("BAD SERVER REQUEST")
+    
 
 
     def restart_command(self):
