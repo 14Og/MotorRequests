@@ -34,18 +34,19 @@ class MotorRequests
 protected: 
     string _IpAddr;
     int8_t _Xval, _Yval;
-    void StartSession();
+    CURL *handler;
+    RequestsError StartSession();
     void EndSession();
     string SendRequest(string &request);
-    void MotorsStop();
-    void FirmwareRestart();
-    void EmergencyStop();
-    void SetXval(int8_t position);
-    void SetYval(int8_t position);
-    void IncreaseXval();
-    void IncreaseYval();
-    void DecreaseXval();
-    void DecreaseYval();
+    RequestsError MotorsStop();
+    RequestsError FirmwareRestart();
+    RequestsError EmergencyStop();
+    RequestsError SetXval(int8_t position);
+    RequestsError SetYval(int8_t position);
+    RequestsError IncreaseXval();
+    RequestsError IncreaseYval();
+    RequestsError DecreaseXval();
+    RequestsError DecreaseYval();
 
 
 public:
