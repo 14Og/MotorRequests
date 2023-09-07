@@ -6,11 +6,13 @@
 #define MIN_ANGLE -90
 
 using std::string;
+using std::to_string;
 
 enum RequestsError : int16_t   
 {
     CommandError = 100,
-    ServerError = 400
+    ServerError = 400,
+    Succeed = 200
 }; 
 
 enum RequestCommands : uint8_t
@@ -35,9 +37,11 @@ protected:
     string _IpAddr;
     int8_t _Xval, _Yval;
     CURL *handler;
-    RequestsError StartSession();
+    string current_url;
+
     void EndSession();
-    string SendRequest(string &request);
+    void CreateCommandDelay(int8_t shifting);
+    RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
     RequestsError EmergencyStop();
@@ -53,8 +57,9 @@ public:
     MotorRequests();
     MotorRequests(string &ipAddr); // should start CURL session and set motors to home position
     ~MotorRequests(); // should stop motors and end curl session
-    RequestsError SetCommand(RequestCommands &command);
-    RequestsError SetCommand(RequestCommands &command, int8_t value);
+    RequestsError StartSession();
+    RequestsError SetCommand(RequestCommands command);
+    RequestsError SetCommand(RequestCommands command, int8_t value);
     int8_t GetXval()
     {
         return this->_Xval;
