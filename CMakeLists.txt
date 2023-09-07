@@ -11,12 +11,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/inc/MotorRequests.h ${CMAKE_BINARY_DI
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_library(${PROJECT_NAME} STATIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/inc/${PROJECT_NAME}.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp)
+# add_library(${PROJECT_NAME} STATIC
+#             ${CMAKE_CURRENT_SOURCE_DIR}/inc/${PROJECT_NAME}.h
+#             ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp)
 
-# add_executable(${PROJECT_NAME} src/example.cpp
-#                                 src/${CMAKE_PROJECT_NAME}.cpp)
+add_executable(${PROJECT_NAME} src/example.cpp
+                                src/${CMAKE_PROJECT_NAME}.cpp)
 
 
 

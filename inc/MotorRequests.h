@@ -38,9 +38,9 @@ protected:
     int8_t _Xval, _Yval;
     CURL *handler;
     string current_url;
+    string temp_sync_url;
 
     void EndSession();
-    void CreateCommandDelay(int8_t shifting);
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();

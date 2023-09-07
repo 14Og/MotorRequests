@@ -27,7 +27,7 @@ RequestsError MotorRequests::StartSession()
     + ":7125/printer/gcode/script?script=G28%20X0%20Y0";
     string kinematics_url = "http://" + this->_IpAddr 
     + ":7125/printer/gcode/script?script=G91";
-
+    this->temp_sync_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=M114";
     RequestsError check_request = this->SendRequest(start_url); // else try to send first request
     if (check_request == Succeed)
     {
@@ -47,14 +47,16 @@ RequestsError MotorRequests::SendRequest(string &url)
     if (this->handler == nullptr) return RequestsError::ServerError; //if no CURL initialized then stop 
     curl_easy_setopt(this->handler, CURLOPT_CONNECTTIMEOUT, 10L);
     curl_easy_setopt(this->handler, CURLOPT_TIMEOUT, 10L);
-    curl_easy_setopt(this->handler, CURLOPT_URL, url.c_str());                                  
+    curl_easy_setopt(this->handler, CURLOPT_URL, url.c_str());                                
     res = curl_easy_perform(this->handler);
 
     if (res != CURLE_OK) return RequestsError::CommandError;
-
-    std::cout << "\nREQUEST MADE: \t" + url + "\n";
+    std::cout << "\n MAIN REQUEST MADE: \t" + url + "\n";
+    curl_easy_setopt(this->handler, CURLOPT_URL, this->temp_sync_url.c_str());
+    res = curl_easy_perform(this->handler);
+    if (res != CURLE_OK) return RequestsError::CommandError;
+    std::cout << "\nSYNC REQUEST MADE\n";
     curl_easy_cleanup(this->handler);
-
     return RequestsError::Succeed;  
 
 }
@@ -75,12 +77,7 @@ MotorRequests::~MotorRequests()
     std::cout << "DESTRUCTOR CALLED\n";
 }
 
-void MotorRequests::CreateCommandDelay(int8_t shifting)
-{
-    uint8_t accel = 0;
-    uint8_t velocity = 0;
 
-}
 
 RequestsError MotorRequests::MotorsStop()
 {
@@ -176,7 +173,7 @@ RequestsError MotorRequests::SetXval(int8_t position)
 RequestsError MotorRequests::SetYval(int8_t position)
 {
     if (position < MIN_ANGLE | position > MAX_ANGLE) return RequestsError::CommandError;
-    int8_t rel_coord_pos = position - this->_Xval;
+    int8_t rel_coord_pos = position - this->_Yval;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20Y+" + to_string(static_cast<int>(rel_coord_pos)) : 
     "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y" + to_string(static_cast<int>(rel_coord_pos));
