@@ -5,6 +5,7 @@ project(MotorRequests VERSION 0.1
 include(CTest)
 enable_testing()
 
+set(CMAKE_CXX_COMPILE_FEATURES "-lcurl")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/inc/MotorRequests.h ${CMAKE_BINARY_DIR}/include/MotorRequests.h COPYONLY)
 
@@ -22,8 +23,7 @@ add_library(${PROJECT_NAME} STATIC
 #                                 src/${CMAKE_PROJECT_NAME}.cpp)
 
 
-
-target_link_libraries(${PROJECT_NAME} curl)
+target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 
