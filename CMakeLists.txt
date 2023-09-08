@@ -11,6 +11,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/inc/MotorRequests.h ${CMAKE_BINARY_DI
 # include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 # include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+find_package(CURL REQUIRED)
+include_directories(${CURL_INCLUDE_DIR})
+
 add_library(${PROJECT_NAME} STATIC
             ${CMAKE_CURRENT_SOURCE_DIR}/inc/${PROJECT_NAME}.h
             ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp)
