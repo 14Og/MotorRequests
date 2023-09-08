@@ -1,8 +1,4 @@
 #include "MotorRequests.h"
-#include <sstream>
-#include <iostream>
-#include <string>
-
 
 
 MotorRequests::MotorRequests()
@@ -27,7 +23,6 @@ RequestsError MotorRequests::StartSession()
     + ":7125/printer/gcode/script?script=G28%20X0%20Y0";
     string kinematics_url = "http://" + this->_IpAddr 
     + ":7125/printer/gcode/script?script=G91";
-    this->temp_sync_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=M114";
     RequestsError check_request = this->SendRequest(start_url); // else try to send first request
     if (check_request == Succeed)
     {
@@ -44,21 +39,35 @@ RequestsError MotorRequests::SendRequest(string &url)
 {
     CURLcode res;
     this->handler = curl_easy_init();
-    if (this->handler == nullptr) return RequestsError::ServerError; //if no CURL initialized then stop 
-    curl_easy_setopt(this->handler, CURLOPT_CONNECTTIMEOUT, 10L);
-    curl_easy_setopt(this->handler, CURLOPT_TIMEOUT, 10L);
-    curl_easy_setopt(this->handler, CURLOPT_URL, url.c_str());                                
-    res = curl_easy_perform(this->handler);
-
-    if (res != CURLE_OK) return RequestsError::CommandError;
-    std::cout << "\n MAIN REQUEST MADE: \t" + url + "\n";
-    curl_easy_setopt(this->handler, CURLOPT_URL, this->temp_sync_url.c_str());
-    res = curl_easy_perform(this->handler);
-    if (res != CURLE_OK) return RequestsError::CommandError;
-    std::cout << "\nSYNC REQUEST MADE\n";
+    if (this->handler == nullptr) return RequestsError::ServerError; //  if no CURL initialized then stop 
+    curl_easy_setopt(this->handler, CURLOPT_CONNECTTIMEOUT, 10L);  //  set CURL connection timeout to connect to the server
+    curl_easy_setopt(this->handler, CURLOPT_TIMEOUT, 10L);  //  set CURL request timer to serve, create and implement request
+    curl_easy_setopt(this->handler, CURLOPT_URL, url.c_str()); // setting up url                                
+    res = curl_easy_perform(this->handler);  // create request
+    if (res != CURLE_OK) return RequestsError::CommandError;  // handle result 
+    std::cout << "\nREQUEST DONE: \t" + url + "\n";
     curl_easy_cleanup(this->handler);
     return RequestsError::Succeed;  
 
+}
+
+void MotorRequests::CreateSyncDelay(int8_t shifting)
+{
+    float velocity = 100 * pow(10,-6);  //  deg per nanosecond
+    float accel = 100 * pow(10, -12);  //  deg per nanosecond / nanosecond
+    int64_t delay;
+    if (shifting <= 100)
+    {
+        delay = sqrt(float(shifting)/accel);
+
+    }
+    
+    else
+    {
+
+        delay = pow(10, 6) + (float(shifting)-velocity)/velocity;
+    }
+   sleep_for(nanoseconds(delay));
 }
 
 void MotorRequests::EndSession()
@@ -109,6 +118,7 @@ RequestsError MotorRequests::IncreaseXval()
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
+        this->CreateSyncDelay(10);
         this->_Xval += 10;
         this->current_url = "";
     }
@@ -121,6 +131,7 @@ RequestsError MotorRequests::IncreaseYval()
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
+        this->CreateSyncDelay(10);
         this->_Yval += 10;
         this->current_url = "";
     }
@@ -133,6 +144,7 @@ RequestsError MotorRequests::DecreaseXval()
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
+        this->CreateSyncDelay(10);
         this->_Yval -= 10;
         this->current_url = "";
     }
@@ -146,6 +158,7 @@ RequestsError MotorRequests::DecreaseYval()
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
+        this->CreateSyncDelay(10);
         this->_Yval -= 10;
         this->current_url = "";
     }
@@ -164,6 +177,7 @@ RequestsError MotorRequests::SetXval(int8_t position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
+        this->CreateSyncDelay(abs(rel_coord_pos));
         this->_Xval = position;
         this->current_url = "";
     }
@@ -180,6 +194,7 @@ RequestsError MotorRequests::SetYval(int8_t position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
+        this->CreateSyncDelay(rel_coord_pos);
         this->_Yval = position;
         this->current_url = "";
     }

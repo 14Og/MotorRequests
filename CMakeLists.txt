@@ -8,19 +8,20 @@ enable_testing()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/inc/MotorRequests.h ${CMAKE_BINARY_DIR}/include/MotorRequests.h COPYONLY)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# add_library(${PROJECT_NAME} STATIC
-#             ${CMAKE_CURRENT_SOURCE_DIR}/inc/${PROJECT_NAME}.h
-#             ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp)
+add_library(${PROJECT_NAME} STATIC
+            ${CMAKE_CURRENT_SOURCE_DIR}/inc/${PROJECT_NAME}.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp)
 
-add_executable(${PROJECT_NAME} src/example.cpp
-                                src/${CMAKE_PROJECT_NAME}.cpp)
+# add_executable(${PROJECT_NAME} src/example.cpp
+#                                 src/${CMAKE_PROJECT_NAME}.cpp)
 
 
 
 target_link_libraries(${PROJECT_NAME} curl)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

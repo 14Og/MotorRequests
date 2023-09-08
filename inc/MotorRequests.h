@@ -1,12 +1,21 @@
 #include <curl/curl.h>
 #include <string>
-
+#include <sstream>
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <cmath>
 
 #define MAX_ANGLE 90
 #define MIN_ANGLE -90
 
+
 using std::string;
 using std::to_string;
+using std::chrono::nanoseconds;
+using std::this_thread::sleep_for;
+
+
 
 enum RequestsError : int16_t   
 {
@@ -38,9 +47,9 @@ protected:
     int8_t _Xval, _Yval;
     CURL *handler;
     string current_url;
-    string temp_sync_url;
 
     void EndSession();
+    void CreateSyncDelay(int8_t shifting);
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
