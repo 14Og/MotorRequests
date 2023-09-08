@@ -51,7 +51,7 @@ RequestsError MotorRequests::SendRequest(string &url)
 
 }
 
-void MotorRequests::CreateSyncDelay(int8_t shifting)
+void MotorRequests::CreateSyncDelay(int16_t shifting)
 {
     float velocity = 100 * pow(10,-6);  //  deg per nanosecond
     float accel = 100 * pow(10, -12);  //  deg per nanosecond / nanosecond
@@ -167,10 +167,10 @@ RequestsError MotorRequests::DecreaseYval()
 }
 
 
-RequestsError MotorRequests::SetXval(int8_t position)
+RequestsError MotorRequests::SetXval(int16_t position)
 {
     if (position < MIN_ANGLE | position > MAX_ANGLE) return RequestsError::CommandError;
-    int8_t rel_coord_pos = position - this->_Xval;
+    int16_t rel_coord_pos = position - this->_Xval;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20X+" + to_string(static_cast<int>(rel_coord_pos)) : 
     "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X" + to_string(static_cast<int>(rel_coord_pos));
@@ -184,10 +184,10 @@ RequestsError MotorRequests::SetXval(int8_t position)
     return ret;
 }
 
-RequestsError MotorRequests::SetYval(int8_t position)
+RequestsError MotorRequests::SetYval(int16_t position)
 {
     if (position < MIN_ANGLE | position > MAX_ANGLE) return RequestsError::CommandError;
-    int8_t rel_coord_pos = position - this->_Yval;
+    int16_t rel_coord_pos = position - this->_Yval;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20Y+" + to_string(static_cast<int>(rel_coord_pos)) : 
     "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y" + to_string(static_cast<int>(rel_coord_pos));
@@ -252,7 +252,7 @@ RequestsError MotorRequests::SetCommand(RequestCommands command)
     }
 }
 
-RequestsError MotorRequests::SetCommand(RequestCommands command, int8_t position)
+RequestsError MotorRequests::SetCommand(RequestCommands command, int16_t position)
 {
     switch (command)
     {

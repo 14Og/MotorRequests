@@ -44,18 +44,18 @@ class MotorRequests
 
 protected: 
     string _IpAddr;
-    int8_t _Xval, _Yval;
+    int16_t _Xval, _Yval;
     CURL *handler;
     string current_url;
 
     void EndSession();
-    void CreateSyncDelay(int8_t shifting);
+    void CreateSyncDelay(int16_t shifting);
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
     RequestsError EmergencyStop();
-    RequestsError SetXval(int8_t position);
-    RequestsError SetYval(int8_t position);
+    RequestsError SetXval(int16_t position);
+    RequestsError SetYval(int16_t position);
     RequestsError IncreaseXval();
     RequestsError IncreaseYval();
     RequestsError DecreaseXval();
@@ -68,7 +68,7 @@ public:
     ~MotorRequests(); // should stop motors and end curl session
     RequestsError StartSession();
     RequestsError SetCommand(RequestCommands command);
-    RequestsError SetCommand(RequestCommands command, int8_t value);
+    RequestsError SetCommand(RequestCommands command, int16_t value);
     int8_t GetXval()
     {
         return this->_Xval;
