@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "MotorRequests.h"
 
 
@@ -53,21 +54,22 @@ RequestsError MotorRequests::SendRequest(string &url)
 
 void MotorRequests::CreateSyncDelay(int16_t shifting)
 {
-    float velocity = 100 * pow(10,-6);  //  deg per nanosecond
-    float accel = 100 * pow(10, -12);  //  deg per nanosecond / nanosecond
-    int64_t delay;
+    double velocity = 100 * pow(10, -6);  //  deg per nanosecond
+    double accel = 100 * pow(10, -12);  //  deg per nanosecond / nanosecond
+    double delay;
+    int8_t multiplexer = 8;
     if (shifting <= 100)
     {
-        delay = sqrt(float(shifting)/accel);
+        delay =  multiplexer * sqrt(double(shifting)/accel);
 
     }
     
     else
     {
 
-        delay = pow(10, 6) + (float(shifting)-velocity)/velocity;
+        delay = multiplexer * ((pow(10, 6) + (double(shifting)-velocity)/velocity));
     }
-   sleep_for(nanoseconds(delay));
+    usleep(useconds_t(delay));
 }
 
 void MotorRequests::EndSession()
