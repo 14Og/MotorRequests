@@ -23,7 +23,7 @@ add_executable(example src/example.cpp
                                 src/MotorRequests.cpp)
 
 
-target_link_libraries(${PROJECT_NAME} PRIVATE curl)
+target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl)
 target_link_libraries(example PRIVATE curl)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
     
