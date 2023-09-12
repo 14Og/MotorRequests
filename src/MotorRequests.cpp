@@ -147,7 +147,7 @@ RequestsError MotorRequests::DecreaseXval()
     if (ret == Succeed)
     {
         this->CreateSyncDelay(10);
-        this->_Yval -= 10;
+        this->_Xval -= 10;
         this->current_url = "";
     }
     return ret;
