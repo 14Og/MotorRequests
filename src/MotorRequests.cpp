@@ -57,7 +57,7 @@ void MotorRequests::CreateSyncDelay(int16_t shifting)
     double velocity = 300 * pow(10, -6);  //  deg per nanosecond
     double accel = 30 * pow(10, -12);  //  deg per nanosecond / nanosecond
     double delay;
-    int8_t multiplexer = 8;
+    int8_t multiplexer = 1;
     if (shifting <= 100)
     {
         delay =  multiplexer * sqrt(double(shifting)/accel);
