@@ -28,3 +28,7 @@ unistd.h
 MotorRequests.h
 /home/pi/Stepper-klipper-requests/src/MotorRequests.h
 
+/home/pi/Stepper-klipper-requests/src/example.cpp
+MotorRequests.h
+/home/pi/Stepper-klipper-requests/src/MotorRequests.h
+

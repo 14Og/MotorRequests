@@ -71,11 +71,11 @@ public:
     RequestsError StartSession();
     RequestsError SetCommand(RequestCommands command);
     RequestsError SetCommand(RequestCommands command, int16_t value);
-    int8_t GetXval()
+    int16_t GetXval()
     {
         return this->_Xval;
     }
-    int8_t GetYval()
+    int16_t GetYval()
     {
         return this->_Yval;
     }
