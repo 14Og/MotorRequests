@@ -54,8 +54,8 @@ RequestsError MotorRequests::SendRequest(string &url)
 
 void MotorRequests::CreateSyncDelay(int16_t shifting)
 {
-    double velocity = 100 * pow(10, -6);  //  deg per nanosecond
-    double accel = 100 * pow(10, -12);  //  deg per nanosecond / nanosecond
+    double velocity = 300 * pow(10, -6);  //  deg per nanosecond
+    double accel = 30 * pow(10, -12);  //  deg per nanosecond / nanosecond
     double delay;
     int8_t multiplexer = 8;
     if (shifting <= 100)
