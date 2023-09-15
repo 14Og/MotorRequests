@@ -171,7 +171,7 @@ RequestsError MotorRequests::DecreaseYval()
 
 RequestsError MotorRequests::SetXval(int16_t position)
 {
-    if (position < MIN_ANGLE | position > MAX_ANGLE) return RequestsError::CommandError;
+    if (position <= MIN_AZIMUTH_ANGLE | position >= MAX_AZIMUTH_ANGLE) return RequestsError::CommandError;
     int16_t rel_coord_pos = position - this->_Xval;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20X+" + to_string(static_cast<int>(rel_coord_pos)) : 
@@ -188,7 +188,7 @@ RequestsError MotorRequests::SetXval(int16_t position)
 
 RequestsError MotorRequests::SetYval(int16_t position)
 {
-    if (position < MIN_ANGLE | position > MAX_ANGLE) return RequestsError::CommandError;
+    if (position < MIN_ELEVATION_ANGLE | position >= MAX_ELEVATION_ANLGE) return RequestsError::CommandError;
     int16_t rel_coord_pos = position - this->_Yval;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20Y+" + to_string(static_cast<int>(rel_coord_pos)) : 

@@ -6,8 +6,10 @@
 #include <thread>
 #include <cmath>
 
-#define MAX_ANGLE 90
-#define MIN_ANGLE -90
+#define MAX_AZIMUTH_ANGLE 90
+#define MIN_AZIMUTH_ANGLE -90
+#define MAX_ELEVATION_ANLGE 360
+#define MIN_ELEVATION_ANGLE 0
 
 
 using std::string;
@@ -56,8 +58,8 @@ protected:
     RequestsError EmergencyStop();
     RequestsError SetXval(int16_t position);
     RequestsError SetYval(int16_t position);
-    RequestsError IncreaseXval();
-    RequestsError IncreaseYval();
+    RequestsError IncreaseXval();  // X - AZIMUTH
+    RequestsError IncreaseYval();  //  Y - ELEVATION
     RequestsError DecreaseXval();
     RequestsError DecreaseYval();
 
