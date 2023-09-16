@@ -27,8 +27,8 @@ RequestsError MotorRequests::StartSession()
     RequestsError check_request = this->SendRequest(start_url); // else try to send first request
     if (check_request == Succeed)
     {
-        this->_Xval = 0;
-        this->_Yval = 0;
+        this->_azimuthVal = 0;
+        this->_elevationVal = 0;
         this->SendRequest(kinematics_url); // handle this request and check the result, if OK then try to send one more request
     }
     else return check_request; // if first one caused error then stop
@@ -54,8 +54,8 @@ RequestsError MotorRequests::SendRequest(string &url)
 
 void MotorRequests::CreateSyncDelay(int16_t shifting)
 {
-    double velocity = 300 * pow(10, -6);  //  deg per nanosecond
-    double accel = 30 * pow(10, -12);  //  deg per nanosecond / nanosecond
+    double velocity = 300 * pow(10, -6);  //  deg per microsecond
+    double accel = 30 * pow(10, -12);  //  deg per microsecond / microsecond
     double delay;
     int8_t multiplexer = 3;
     if (shifting <= 100)
@@ -67,7 +67,8 @@ void MotorRequests::CreateSyncDelay(int16_t shifting)
     else
     {
 
-        delay = multiplexer * ((pow(10, 6) + (double(shifting)-velocity)/velocity));
+        delay = multiplexer * ((pow(10, 6) + 
+                    (double(shifting)-velocity)/velocity));
     }
     usleep(useconds_t(delay));
 }
@@ -114,54 +115,54 @@ RequestsError MotorRequests::EmergencyStop()
     return ret;
 }
 
-RequestsError MotorRequests::IncreaseXval()
+RequestsError MotorRequests::IncreaseAzimuthVal()
 {
     this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X+10";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
         this->CreateSyncDelay(10);
-        this->_Xval += 10;
+        this->_azimuthVal += 10;
         this->current_url = "";
     }
     return ret;
 }
 
-RequestsError MotorRequests::IncreaseYval()
+RequestsError MotorRequests::IncreaseElevationVal()
 {
     this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y+10";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
         this->CreateSyncDelay(10);
-        this->_Yval += 10;
+        this->_elevationVal += 10;
         this->current_url = "";
     }
     return ret;
 }
 
-RequestsError MotorRequests::DecreaseXval()
+RequestsError MotorRequests::DecreaseAzimuthVal()
 {
     this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X-10";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
         this->CreateSyncDelay(10);
-        this->_Xval -= 10;
+        this->_azimuthVal -= 10;
         this->current_url = "";
     }
     return ret;
 
 }
 
-RequestsError MotorRequests::DecreaseYval()
+RequestsError MotorRequests::DecreaseElevationVal()
 {
     this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y-10";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
         this->CreateSyncDelay(10);
-        this->_Yval -= 10;
+        this->_elevationVal -= 10;
         this->current_url = "";
     }
     return ret;
@@ -169,10 +170,10 @@ RequestsError MotorRequests::DecreaseYval()
 }
 
 
-RequestsError MotorRequests::SetXval(int16_t position)
+RequestsError MotorRequests::SetAzimuthVal(int16_t position)
 {
     if (position <= MIN_AZIMUTH_ANGLE | position >= MAX_AZIMUTH_ANGLE) return RequestsError::CommandError;
-    int16_t rel_coord_pos = position - this->_Xval;
+    int16_t rel_coord_pos = position - this->_azimuthVal;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20X+" + to_string(static_cast<int>(rel_coord_pos)) : 
     "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X" + to_string(static_cast<int>(rel_coord_pos));
@@ -180,16 +181,16 @@ RequestsError MotorRequests::SetXval(int16_t position)
     if (ret == Succeed)
     {
         this->CreateSyncDelay(abs(rel_coord_pos));
-        this->_Xval = position;
+        this->_azimuthVal = position;
         this->current_url = "";
     }
     return ret;
 }
 
-RequestsError MotorRequests::SetYval(int16_t position)
+RequestsError MotorRequests::SetElevationVal(int16_t position)
 {
     if (position < MIN_ELEVATION_ANGLE | position >= MAX_ELEVATION_ANLGE) return RequestsError::CommandError;
-    int16_t rel_coord_pos = position - this->_Yval;
+    int16_t rel_coord_pos = position - this->_elevationVal;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20Y+" + to_string(static_cast<int>(rel_coord_pos)) : 
     "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y" + to_string(static_cast<int>(rel_coord_pos));
@@ -197,7 +198,7 @@ RequestsError MotorRequests::SetYval(int16_t position)
     if (ret == Succeed)
     {
         this->CreateSyncDelay(rel_coord_pos);
-        this->_Yval = position;
+        this->_elevationVal = position;
         this->current_url = "";
     }
     return ret;
@@ -223,27 +224,27 @@ RequestsError MotorRequests::SetCommand(RequestCommands command)
         break;
     }
 
-    case increase_x_val:
+    case increase_azimuth_val:
     {
-        return this->IncreaseXval();
+        return this->IncreaseAzimuthVal();
         break;
     }
     
-    case increase_y_val:
+    case increase_elevation_val:
     {
-        return this->IncreaseYval();
+        return this->IncreaseElevationVal();
         break;
     }
 
-    case decrease_x_val:
+    case decrease_azimuth_val:
     {
-        return this->DecreaseXval();
+        return this->DecreaseAzimuthVal();
         break;
     }
 
-    case decrease_y_val:
+    case decrease_elevation_val:
     {
-        return this->DecreaseYval();
+        return this->DecreaseElevationVal();
         break;
     }
     default:
@@ -258,14 +259,14 @@ RequestsError MotorRequests::SetCommand(RequestCommands command, int16_t positio
 {
     switch (command)
     {
-    case set_x_val:
+    case set_azimuth_val:
     {
-        return this->SetXval(position);
+        return this->SetAzimuthVal(position);
         break;
     }
-    case set_y_val:
+    case set_elevation_val:
     {
-        return this->SetYval(position);
+        return this->SetElevationVal(position);
         break;
     }
     default:

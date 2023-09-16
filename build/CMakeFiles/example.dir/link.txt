@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/example.dir/src/example.cpp.o CMakeFiles/example.dir/src/MotorRequests.cpp.o -o example  -lcurl 

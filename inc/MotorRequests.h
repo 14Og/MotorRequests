@@ -21,22 +21,22 @@ using std::this_thread::sleep_for;
 
 enum RequestsError : int16_t   
 {
-    CommandError = 100,
-    ServerError = 400,
-    Succeed = 200
+    CommandError,
+    ServerError,
+    Succeed
 }; 
 
 enum RequestCommands : uint8_t
 {
-     motors_stop  = 1,
-     firmware_restart = 0,
-     emergency_stop = 112,
-     set_x_val = 2,
-     set_y_val = 3,
-     increase_x_val = 4,
-     increase_y_val = 5,
-     decrease_x_val = 6,
-     decrease_y_val = 7
+     motors_stop,
+     firmware_restart,
+     emergency_stop,
+     set_azimuth_val,
+     set_elevation_val,
+     increase_azimuth_val,
+     increase_elevation_val,
+     decrease_azimuth_val,
+     decrease_elevation_val
 
 }; //then put bytes-like values to call from Qt form
 
@@ -46,7 +46,7 @@ class MotorRequests
 
 protected: 
     string _IpAddr;
-    int16_t _Xval, _Yval;
+    int16_t _azimuthVal, _elevationVal;
     CURL *handler;
     string current_url;
 
@@ -56,12 +56,12 @@ protected:
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
     RequestsError EmergencyStop();
-    RequestsError SetXval(int16_t position);
-    RequestsError SetYval(int16_t position);
-    RequestsError IncreaseXval();  // X - AZIMUTH
-    RequestsError IncreaseYval();  //  Y - ELEVATION
-    RequestsError DecreaseXval();
-    RequestsError DecreaseYval();
+    RequestsError SetAzimuthVal(int16_t position);
+    RequestsError SetElevationVal(int16_t position);
+    RequestsError IncreaseAzimuthVal();  // X - AZIMUTH
+    RequestsError IncreaseElevationVal();  //  Y - ELEVATION
+    RequestsError DecreaseAzimuthVal();
+    RequestsError DecreaseElevationVal();
 
 
 public:
@@ -69,15 +69,15 @@ public:
     MotorRequests(string &ipAddr); // should start CURL session and set motors to home position
     ~MotorRequests(); // should stop motors and end curl session
     RequestsError StartSession();
-    RequestsError SetCommand(RequestCommands command);
-    RequestsError SetCommand(RequestCommands command, int16_t value);
+    RequestsError SetCommand(const RequestCommands command);
+    RequestsError SetCommand(const RequestCommands command, const int16_t value);
     int16_t GetXval()
     {
-        return this->_Xval;
+        return this->_azimuthVal;
     }
     int16_t GetYval()
     {
-        return this->_Yval;
+        return this->_elevationVal;
     }
 
     

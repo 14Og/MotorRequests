@@ -1,2 +1,0 @@
-/usr/bin/ar qc libMotorRequests.a CMakeFiles/MotorRequests.dir/src/MotorRequests.cpp.o
-/usr/bin/ranlib libMotorRequests.a
