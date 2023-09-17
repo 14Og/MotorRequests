@@ -204,6 +204,35 @@ RequestsError MotorRequests::SetElevationVal(int16_t position)
     return ret;
 }
 
+RequestsError MotorRequests::ZeroAzimuth()
+{
+    int16_t current_azimuth = this->GetXval();
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X0%";
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed)
+    {
+        this->CreateSyncDelay(current_azimuth);
+        this->_azimuthVal = 0;
+        this->current_url = "";
+    }
+    return ret;
+
+}
+
+RequestsError MotorRequests::ZeroElevation()
+{
+    int16_t current_elevation = this->GetYval();
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y0%";
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed)
+    {
+        this->CreateSyncDelay(current_elevation);
+        this->_elevationVal = 0;
+        this->current_url = "";
+    }
+    return ret;
+}
+
 RequestsError MotorRequests::SetCommand(RequestCommands command)
 {
     switch (command)

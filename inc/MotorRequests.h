@@ -36,7 +36,9 @@ enum RequestCommands : uint8_t
      increase_azimuth_val,
      increase_elevation_val,
      decrease_azimuth_val,
-     decrease_elevation_val
+     decrease_elevation_val,
+     zero_azimuth,
+     zero_elevation
 
 }; //then put bytes-like values to call from Qt form
 
@@ -62,6 +64,8 @@ protected:
     RequestsError IncreaseElevationVal();  //  Y - ELEVATION
     RequestsError DecreaseAzimuthVal();
     RequestsError DecreaseElevationVal();
+    RequestsError ZeroAzimuth();
+    RequestsError ZeroElevation();
 
 
 public:
