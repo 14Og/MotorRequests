@@ -1,6 +1,6 @@
 #include <unistd.h>
+#include <fstream>
 #include "MotorRequests.h"
-
 
 MotorRequests::MotorRequests()
 {
@@ -54,8 +54,24 @@ RequestsError MotorRequests::SendRequest(string &url)
 
 void MotorRequests::CreateSyncDelay(int16_t shifting)
 {
-    double velocity = 300 * pow(10, -6);  //  deg per microsecond
-    double accel = 30 * pow(10, -12);  //  deg per microsecond / microsecond
+    uint8_t vel_line = 120;
+    uint8_t acc_line = 121;
+    std::string vel_str;
+    std::string acc_str;
+    std::string line;
+    std::ifstream file ("/home/pi/printer_data/config/printer.cfg");
+    for (uint8_t i = 0; i < 122; i++)
+    {
+        getline(file, line);
+        if (i == vel_line) vel_str = line;
+        if (i == acc_line) acc_str = line;
+    }
+    int16_t vel = std::stoi(vel_str.substr(13, vel_str.length() -13));
+    int16_t acc = std::stoi(acc_str.substr(10, acc_str.length() - 10));
+    
+
+    double velocity = vel * pow(10, -6);  //  deg per microsecond
+    double accel = acc * pow(10, -12);  //  deg per microsecond / microsecond
     double delay;
     int8_t multiplexer = 3;
     if (shifting <= 100)
@@ -117,12 +133,26 @@ RequestsError MotorRequests::EmergencyStop()
 
 RequestsError MotorRequests::IncreaseAzimuthVal()
 {
-    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X+10";
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X+5";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(10);
-        this->_azimuthVal += 10;
+        this->CreateSyncDelay(5);
+        this->_azimuthVal += 5;
+        this->current_url = "";
+    }
+    return ret;
+}
+
+RequestsError MotorRequests::IncreaseAzimuthVal(int16_t position)
+
+{     
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X+" + to_string(position);
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed)
+    {
+        this->CreateSyncDelay(abs(position));
+        this->_azimuthVal += position;
         this->current_url = "";
     }
     return ret;
@@ -130,12 +160,26 @@ RequestsError MotorRequests::IncreaseAzimuthVal()
 
 RequestsError MotorRequests::IncreaseElevationVal()
 {
-    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y+10";
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y+5";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(10);
-        this->_elevationVal += 10;
+        this->CreateSyncDelay(5);
+        this->_elevationVal += 5;
+        this->current_url = "";
+    }
+    return ret;
+}
+
+RequestsError MotorRequests::IncreaseElevationVal(int16_t position)
+
+{     
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y+" + to_string(position);
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed)
+    {
+        this->CreateSyncDelay(abs(position));
+        this->_elevationVal += position;
         this->current_url = "";
     }
     return ret;
@@ -143,26 +187,57 @@ RequestsError MotorRequests::IncreaseElevationVal()
 
 RequestsError MotorRequests::DecreaseAzimuthVal()
 {
-    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X-10";
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X-5";
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(10);
-        this->_azimuthVal -= 10;
+        this->CreateSyncDelay(5);
+        this->_azimuthVal -= 5;
         this->current_url = "";
     }
     return ret;
 
 }
 
-RequestsError MotorRequests::DecreaseElevationVal()
+
+RequestsError MotorRequests::DecreaseAzimuthVal(int16_t position)
 {
-    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y-10";
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X-" + to_string(position);
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(10);
-        this->_elevationVal -= 10;
+        this->CreateSyncDelay(5);
+        this->_azimuthVal -= position;
+        this->current_url = "";
+    }
+    return ret;
+
+}
+
+
+RequestsError MotorRequests::DecreaseElevationVal()
+{
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y-5";
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed)
+    {
+        this->CreateSyncDelay(5);
+        this->_elevationVal -= 5;
+        this->current_url = "";
+    }
+    return ret;
+
+}
+
+
+RequestsError MotorRequests::DecreaseElevationVal(int16_t position)
+{
+    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y-" + to_string(position);
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed)
+    {
+        this->CreateSyncDelay(5);
+        this->_elevationVal -= position;
         this->current_url = "";
     }
     return ret;
@@ -189,7 +264,7 @@ RequestsError MotorRequests::SetAzimuthVal(int16_t position)
 
 RequestsError MotorRequests::SetElevationVal(int16_t position)
 {
-    if (position < MIN_ELEVATION_ANGLE | position >= MAX_ELEVATION_ANLGE) return RequestsError::CommandError;
+    if (position < MIN_ELEVATION_ANGLE | position >= MAX_ELEVATION_ANGLE) return RequestsError::CommandError;
     int16_t rel_coord_pos = position - this->_elevationVal;
     this->current_url = (rel_coord_pos > 0) ? "http://" + this->_IpAddr + 
     ":7125/printer/gcode/script?script=G1%20Y+" + to_string(static_cast<int>(rel_coord_pos)) : 
@@ -206,31 +281,13 @@ RequestsError MotorRequests::SetElevationVal(int16_t position)
 
 RequestsError MotorRequests::ZeroAzimuth()
 {
-    int16_t current_azimuth = this->GetXval();
-    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20X0%";
-    RequestsError ret = this->SendRequest(this->current_url);
-    if (ret == Succeed)
-    {
-        this->CreateSyncDelay(current_azimuth);
-        this->_azimuthVal = 0;
-        this->current_url = "";
-    }
-    return ret;
+   return this->SetAzimuthVal(0);
 
 }
 
 RequestsError MotorRequests::ZeroElevation()
 {
-    int16_t current_elevation = this->GetYval();
-    this->current_url = "http://" + this->_IpAddr + ":7125/printer/gcode/script?script=G1%20Y0%";
-    RequestsError ret = this->SendRequest(this->current_url);
-    if (ret == Succeed)
-    {
-        this->CreateSyncDelay(current_elevation);
-        this->_elevationVal = 0;
-        this->current_url = "";
-    }
-    return ret;
+    return this->SetElevationVal(0);
 }
 
 RequestsError MotorRequests::SetCommand(RequestCommands command)
@@ -276,6 +333,19 @@ RequestsError MotorRequests::SetCommand(RequestCommands command)
         return this->DecreaseElevationVal();
         break;
     }
+
+    case zero_azimuth:
+    {
+        return this->ZeroAzimuth();
+        break;
+    }
+
+    case zero_elevation:
+    {
+        return this->ZeroElevation();
+        break;
+    }
+
     default:
     {
 
@@ -298,11 +368,34 @@ RequestsError MotorRequests::SetCommand(RequestCommands command, int16_t positio
         return this->SetElevationVal(position);
         break;
     }
+    
+    case increase_azimuth_val:
+    {
+        return this->IncreaseAzimuthVal(position);
+        break;
+    }
+
+    case increase_elevation_val:
+    {
+        return this->IncreaseElevationVal(position);
+    }
+
+    case decrease_azimuth_val:
+    {
+        return this->DecreaseAzimuthVal(position);
+    }
+
+    case decrease_elevation_val:
+    {
+        return this->DecreaseElevationVal(position);
+    }
+
     default:
     {
         return RequestsError::CommandError;
     }   
     }
+
 }
 
 

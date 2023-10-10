@@ -6,10 +6,10 @@
 #include <thread>
 #include <cmath>
 
-#define MAX_AZIMUTH_ANGLE 90
-#define MIN_AZIMUTH_ANGLE -90
-#define MAX_ELEVATION_ANLGE 360
-#define MIN_ELEVATION_ANGLE 0
+#define MAX_ELEVATION_ANGLE 90
+#define MIN_ELEVATION_ANGLE -90
+#define MAX_AZIMUTH_ANGLE 360
+#define MIN_AZIMUTH_ANGLE 0
 
 
 using std::string;
@@ -53,33 +53,38 @@ protected:
     string current_url;
 
     void EndSession();
-    void CreateSyncDelay(int16_t shifting);
+
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
     RequestsError EmergencyStop();
     RequestsError SetAzimuthVal(int16_t position);
     RequestsError SetElevationVal(int16_t position);
+    RequestsError IncreaseAzimuthVal(int16_t position);
     RequestsError IncreaseAzimuthVal();  // X - AZIMUTH
+    RequestsError IncreaseElevationVal(int16_t position);
     RequestsError IncreaseElevationVal();  //  Y - ELEVATION
+    RequestsError DecreaseAzimuthVal(int16_t position);
     RequestsError DecreaseAzimuthVal();
+    RequestsError DecreaseElevationVal(int16_t position);
     RequestsError DecreaseElevationVal();
     RequestsError ZeroAzimuth();
     RequestsError ZeroElevation();
 
 
 public:
+    void CreateSyncDelay(int16_t shifting);
     MotorRequests();
     MotorRequests(string &ipAddr); // should start CURL session and set motors to home position
     ~MotorRequests(); // should stop motors and end curl session
     RequestsError StartSession();
     RequestsError SetCommand(const RequestCommands command);
     RequestsError SetCommand(const RequestCommands command, const int16_t value);
-    int16_t GetXval()
+    int16_t GetAzVal()
     {
         return this->_azimuthVal;
     }
-    int16_t GetYval()
+    int16_t GetElVal()
     {
         return this->_elevationVal;
     }

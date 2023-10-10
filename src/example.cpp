@@ -8,6 +8,7 @@ int main()
 string ip = "192.168.0.5";
 MotorRequests cbs_stand(ip);
     cbs_stand.StartSession();
+    cbs_stand.CreateSyncDelay(20);
 
     cbs_stand.SetCommand(RequestCommands::increase_azimuth_val);
     cbs_stand.SetCommand(RequestCommands::increase_elevation_val);
