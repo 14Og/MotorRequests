@@ -52,7 +52,8 @@ RequestsError MotorRequests::SendRequest(string &url)
 
 }
 
-void MotorRequests::CreateSyncDelay(int16_t shifting)
+
+void MotorRequests::ParseCinematicParams()
 {
     uint8_t vel_line = 120;
     uint8_t acc_line = 121;
@@ -66,23 +67,24 @@ void MotorRequests::CreateSyncDelay(int16_t shifting)
         if (i == vel_line) vel_str = line;
         if (i == acc_line) acc_str = line;
     }
-    int16_t vel = std::stoi(vel_str.substr(13, vel_str.length() -13));
-    int16_t acc = std::stoi(acc_str.substr(10, acc_str.length() - 10));
-    
+    this->acc = std::stoi(vel_str.substr(13, vel_str.length() -13));
+    this->vel = std::stoi(acc_str.substr(10, acc_str.length() - 10));
 
-    double velocity = vel * pow(10, -6);  //  deg per microsecond
-    double accel = acc * pow(10, -12);  //  deg per microsecond / microsecond
+}
+
+void MotorRequests::CreateSyncDelay(int16_t shifting)
+{
+    double velocity = this->vel * pow(10, -6);  //  deg per microsecond
+    double accel = this->acc * pow(10, -12);  //  deg per microsecond / microsecond
     double delay;
     int8_t multiplexer = 3;
     if (shifting <= 100)
     {
         delay =  multiplexer * sqrt(double(shifting)/accel);
-
     }
     
     else
     {
-
         delay = multiplexer * ((pow(10, 6) + 
                     (double(shifting)-velocity)/velocity));
     }

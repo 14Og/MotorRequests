@@ -51,9 +51,12 @@ protected:
     int16_t _azimuthVal, _elevationVal;
     CURL *handler;
     string current_url;
+    int16_t vel;
+    int16_t acc;
 
     void EndSession();
-
+    void CreateSyncDelay(int16_t shifting);
+    void ParseCinematicParams();
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
@@ -73,7 +76,7 @@ protected:
 
 
 public:
-    void CreateSyncDelay(int16_t shifting);
+
     MotorRequests();
     MotorRequests(string &ipAddr); // should start CURL session and set motors to home position
     ~MotorRequests(); // should stop motors and end curl session
