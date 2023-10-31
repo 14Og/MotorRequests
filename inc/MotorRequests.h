@@ -7,7 +7,7 @@
 #include <cmath>
 
 #define MAX_ELEVATION_ANGLE 90
-#define MIN_ELEVATION_ANGLE -90
+#define MIN_ELEVATION_ANGLE 0
 #define MAX_AZIMUTH_ANGLE 360
 #define MIN_AZIMUTH_ANGLE 0
 
@@ -28,7 +28,7 @@ enum RequestsError : int16_t
 
 enum RequestCommands : uint8_t
 {
-     motors_stop,
+     motors_stop = 0,
      firmware_restart,
      emergency_stop,
      set_azimuth_val,
@@ -38,7 +38,9 @@ enum RequestCommands : uint8_t
      decrease_azimuth_val,
      decrease_elevation_val,
      zero_azimuth,
-     zero_elevation
+     zero_elevation,
+     relative_coordinates,
+     absolute_cooridinates
 
 }; //then put bytes-like values to call from Qt form
 
@@ -48,32 +50,29 @@ class MotorRequests
 
 protected: 
     string _IpAddr;
-    int16_t _azimuthVal, _elevationVal;
+    float _azimuthVal, _elevationVal;
     CURL *handler;
     string current_url;
     int16_t vel;
     int16_t acc;
+    bool isAbsolute{false};
 
     void EndSession();
-    void CreateSyncDelay(int16_t shifting);
-    void ParseCinematicParams();
+    void CreateSyncDelay(float shifting);
+    void ParseKinematicParams();
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
     RequestsError FirmwareRestart();
     RequestsError EmergencyStop();
-    RequestsError SetAzimuthVal(int16_t position);
-    RequestsError SetElevationVal(int16_t position);
-    RequestsError IncreaseAzimuthVal(int16_t position);
-    RequestsError IncreaseAzimuthVal();  // X - AZIMUTH
-    RequestsError IncreaseElevationVal(int16_t position);
-    RequestsError IncreaseElevationVal();  //  Y - ELEVATION
-    RequestsError DecreaseAzimuthVal(int16_t position);
-    RequestsError DecreaseAzimuthVal();
-    RequestsError DecreaseElevationVal(int16_t position);
-    RequestsError DecreaseElevationVal();
+    RequestsError SetElevationVal(float position);
+    RequestsError SetAzimuthVal(float position);
+    RequestsError IncreaseElevationVal(float position);  //  Y - elevation
+    RequestsError IncreaseAzimuthVal(float position);  //  X - azimuth
+    RequestsError DecreaseAzimuthVal(float position);
+    RequestsError DecreaseElevationVal(float position);
     RequestsError ZeroAzimuth();
     RequestsError ZeroElevation();
-
+    void ChangeCoordinates(RequestCommands coordinatesType);
 
 public:
 
@@ -82,7 +81,8 @@ public:
     ~MotorRequests(); // should stop motors and end curl session
     RequestsError StartSession();
     RequestsError SetCommand(const RequestCommands command);
-    RequestsError SetCommand(const RequestCommands command, const int16_t value);
+    RequestsError SetCommand(const RequestCommands command, const float value, bool isAbsolute);
+    RequestsError GridLogging(const float elevation, const float azimuth);
     int16_t GetAzVal()
     {
         return this->_azimuthVal;
