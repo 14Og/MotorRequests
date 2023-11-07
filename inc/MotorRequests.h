@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <cmath>
+#include <unistd.h>
 
 #define MAX_ELEVATION_ANGLE 90
 #define MIN_ELEVATION_ANGLE 0
@@ -59,6 +60,9 @@ protected:
 
     void EndSession();
     void CreateSyncDelay(float shifting);
+    inline void CreateSyncDelay(useconds_t milis) {
+        usleep(milis*1000);
+    }
     void ParseKinematicParams();
     RequestsError SendRequest(string &request);
     RequestsError MotorsStop();
@@ -83,11 +87,11 @@ public:
     RequestsError SetCommand(const RequestCommands command);
     RequestsError SetCommand(const RequestCommands command, const float value, bool isAbsolute);
     RequestsError GridLogging(const float elevation, const float azimuth);
-    int16_t GetAzVal()
+    inline float GetAzVal()
     {
         return this->_azimuthVal;
     }
-    int16_t GetElVal()
+    inline float GetElVal()
     {
         return this->_elevationVal;
     }

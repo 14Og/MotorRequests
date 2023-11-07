@@ -93,6 +93,10 @@ void MotorRequests::CreateSyncDelay(float shifting)
     usleep(useconds_t(delay));
 }
 
+// void MotorRequests::CreateSyncDelay(useconds_t milis) {
+//     usleep(milis);
+// }
+
 void MotorRequests::EndSession()
 {
     if (this->handler != nullptr)
@@ -142,7 +146,7 @@ RequestsError MotorRequests::IncreaseAzimuthVal(float position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(abs(position));
+        this->CreateSyncDelay((float)abs(position));
         this->_azimuthVal += position;
     }
     this->current_url = "";
@@ -158,7 +162,7 @@ RequestsError MotorRequests::IncreaseElevationVal(float position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(abs(position));
+        this->CreateSyncDelay((float)abs(position));
         this->_elevationVal += position;
     }
     this->current_url = "";
@@ -172,7 +176,7 @@ RequestsError MotorRequests::DecreaseAzimuthVal(float position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(5);
+        this->CreateSyncDelay((float)5);
         this->_azimuthVal -= position;
     }
     this->current_url = "";
@@ -189,7 +193,7 @@ RequestsError MotorRequests::DecreaseElevationVal(float position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(5);
+        this->CreateSyncDelay((float)5);
         this->_elevationVal -= position;
     }
     this->current_url = "";
@@ -215,7 +219,7 @@ RequestsError MotorRequests::SetAzimuthVal(float position)
     std::cout << "SENT REQUEST TO ANGLE" << position << std::endl;
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(abs(this->_azimuthVal - position));
+        this->CreateSyncDelay((float)abs(this->_azimuthVal - position));
         this->_azimuthVal = position;
     }
     this->current_url = "";
@@ -241,7 +245,7 @@ RequestsError MotorRequests::SetElevationVal(float position)
     RequestsError ret = this->SendRequest(this->current_url);
     if (ret == Succeed)
     {
-        this->CreateSyncDelay(abs(this->_elevationVal - position));
+        this->CreateSyncDelay((float)abs(this->_elevationVal - position));
         this->_elevationVal = position;
     }
     this->current_url = "";
@@ -345,28 +349,42 @@ RequestsError MotorRequests::SetCommand(const RequestCommands command, const flo
     case increase_elevation_val:
     {
         return this->IncreaseElevationVal(value);
+        break;
     }
     case decrease_azimuth_val:
     {
         return this->DecreaseAzimuthVal(value);
+        break;
     }
     case decrease_elevation_val:
     {
         return this->DecreaseElevationVal(value);
+        break;
     }
+
     default:
     {
         return RequestsError::CommandError;
-    }   
+        break;
     }
-
+    }
 }
 
 
 RequestsError MotorRequests::GridLogging(const float elevation, const float azimuth) {
-    RequestsError ret1 = this->SetCommand(set_elevation_val, elevation, true);
-    if (ret1 != Succeed)
-        return ret1;
-    RequestsError ret2 = this->SetCommand(set_azimuth_val, azimuth, true);
-    return ret2;
+    if(!this->isAbsolute) {
+        this->ChangeCoordinates(absolute_cooridinates);
+    }
+    this->current_url + "http://" + this->_IpAddr + 
+    ":7125/printer/gcode/script?script=G1%20X+" + to_string(azimuth) + "Y" + to_string(elevation);
+    RequestsError ret = this->SendRequest(this->current_url);
+    if (ret == Succeed) {
+        this->CreateSyncDelay((useconds_t)500);
+        float totalShift = abs(this->_elevationVal - elevation) + abs(this->_azimuthVal - azimuth);
+        this->CreateSyncDelay(totalShift);
+        this->_azimuthVal = azimuth;
+        this->_elevationVal = elevation;
+    }
+    this->current_url = "";
+    return ret;
 }
