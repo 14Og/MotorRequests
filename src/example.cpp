@@ -5,17 +5,17 @@
 
 int main()
 {
-string ip = "192.168.0.5";
-MotorRequests cbs_stand(ip);
-    cbs_stand.StartSession();
-    cbs_stand.CreateSyncDelay(20);
-
-    cbs_stand.SetCommand(RequestCommands::increase_azimuth_val);
-    cbs_stand.SetCommand(RequestCommands::increase_elevation_val);
-    cbs_stand.SetCommand(RequestCommands::decrease_azimuth_val);
-    cbs_stand.SetCommand(RequestCommands::decrease_elevation_val);
-    cbs_stand.SetCommand(RequestCommands::set_azimuth_val, 30);
-    cbs_stand.SetCommand(RequestCommands::set_elevation_val, 130);
-    cbs_stand.SetCommand(RequestCommands::firmware_restart);
-return 0;
+std::string ip = "10.42.0.150";
+std::string gcode = ":7125/printer/gcode/script?script=";
+MotorRequests cbs_stand(ip, gcode);
+    cbs_stand.StartSession(); 
+    // cbs_stand.GridCalibration(0,100);
+    // cbs_stand.GridCalibration(100,100);
+    // cbs_stand.GridCalibration(100,0);
+    // cbs_stand.GridCalibration(45, 45);
+    // cbs_stand.SetCommand(zero_elevation);
+    // cbs_stand.SetCommand(zero_azimuth);
+    cbs_stand.SetCommand(increase_elevation_val, 360);
+    cbs_stand.SetCommand(increase_elevation_val, 100);
+    return 0;
 }
