@@ -27,7 +27,7 @@ void MotorRequests::StartSession() {
     _handler = curl_easy_init();
     if (_handler == nullptr) throw std::runtime_error("Server initialization problem."); //  if no CURL initialized then stop 
     curl_easy_setopt(_handler, CURLOPT_CONNECTTIMEOUT, 10L);  //  set CURL connection timeout to connect to the server
-    curl_easy_setopt(_handler, CURLOPT_TIMEOUT, 10L);  //  set CURL request timer to serve, create and implement request
+    curl_easy_setopt(_handler, CURLOPT_TIMEOUT, 20L);  //  set CURL request timer to serve, create and implement request
 
     std::string start_url = CreateUrl("HOME");
     std::string kinematics_url = CreateUrl("G91");
