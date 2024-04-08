@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 project(MotorRequests VERSION 0.1
                         DESCRIPTION "Lib foor making http requests to klipper API")
 
-# include(CTest)
 enable_testing()
 
-set(CMAKE_CXX_COMPILE_FEATURES "-lcurl")
-# set(CMAKE_CXX_FLAGS "-std=c++2a")
+set(CMAKE_CXX_STANDARD 17)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/inc/MotorRequests.h ${CMAKE_BINARY_DIR}/include/MotorRequests.h COPYONLY)
 
