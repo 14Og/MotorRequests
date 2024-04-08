@@ -28,6 +28,8 @@ add_executable(example src/example.cpp
 target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl PRIVATE jsoncons)
 target_link_libraries(example PRIVATE ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/jsoncons/include)
+
     
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
