@@ -3,8 +3,10 @@
 
 
 size_t curlWriteToString (void *buffer, size_t size, size_t nmemb, void *userp) {
-  ((std::string*) userp)->append ((const char*) buffer, size * nmemb);
-  return size * nmemb;};
+    (static_cast<std::string*>(userp))->append(static_cast<const char*>(buffer), size * nmemb);
+    return size * nmemb;
+  }
+
 
 MotorRequests::MotorRequests(): _ipAddr{"10.42.0.150"}, 
                                 _gcodeTemplate{":7125/printer/gcode/script?script="} 
@@ -62,8 +64,8 @@ void MotorRequests::SendRequest(std::string &url, bool verbose) {
 void MotorRequests::ParseKinematicParams() {
     std::string request = "http://10.42.0.150/printer/objects/query?toolhead";
     SendRequest(request, false);
-    _vel = _lastDumpedRequest["result"]["status"]["toolhead"]["max_velocity"].as<uint16_t>();
-    _acc = _lastDumpedRequest["result"]["status"]["toolhead"]["max_accel"].as<uint16_t>();
+    _maxVel = _lastDumpedRequest["result"]["status"]["toolhead"]["max_velocity"].as<uint16_t>();
+    _maxAcc = _lastDumpedRequest["result"]["status"]["toolhead"]["max_accel"].as<uint16_t>();
 }
 
 
@@ -154,41 +156,69 @@ void MotorRequests::SetCommand(const RequestCommands command)
 
     switch (command)
     {
-    case motors_stop:
-    {
-        MotorsStop();
-        break;
-    }
-    case firmware_restart:
-    {
-        FirmwareRestart();
-        break;
-    }
-    case emergency_stop:
-    {
-        EmergencyStop();
-        break;
-    }
-    case zero_azimuth:
-    {
-        ZeroAzimuth();
-        break;
-    }
-    case zero_elevation:
-    {
-        ZeroElevation();
-        break;
-    }
-    default:
-    {
-        return throw std::runtime_error("Unspecified command for this funtion parameters.");
-    }  
+        case motors_stop:
+        {
+            MotorsStop();
+            break;
+        }
+        case firmware_restart:
+        {
+            FirmwareRestart();
+            break;
+        }
+        case emergency_stop:
+        {
+            EmergencyStop();
+            break;
+        }
+        case zero_azimuth:
+        {
+            ZeroAzimuth();
+            break;
+        }
+        case zero_elevation:
+        {
+            ZeroElevation();
+            break;
+        }
+        case home:
+        {
+            Home();
+            break;
+        }
+        default:
+        {
+            return throw std::runtime_error("Unspecified command for this funtion parameters.");
+        }  
     }
     while(1) {
         GetCurrentPositionRequest();
         if(Probe()) break;
     }
 }
+
+
+void MotorRequests::Home() {
+    _currentUrl = CreateUrl("HOME");
+    SendRequest(_currentUrl);
+}
+
+
+void MotorRequests::PerformDirectRequest(std::string url) {
+    _currentUrl = url;
+    SendRequest(url);
+    while(1) {
+        GetCurrentPositionRequest();
+        if(Probe()) break;
+    }
+}
+
+
+void MotorRequests::SetSpeed(const float degPerSec) {
+    _currentUrl = CreateUrl("SET_SPEED%20", "VALUE=", std::to_string(degPerSec));
+    SendRequest(_currentUrl);
+}   
+
 
 void MotorRequests::SetCommand(const RequestCommands command, const float value)
 {     
@@ -223,6 +253,11 @@ void MotorRequests::SetCommand(const RequestCommands command, const float value)
     case decrease_elevation_val:
     {
         DecreaseElevationVal(value);
+        break;
+    }
+    case set_speed:
+    {
+        SetSpeed(value);
         break;
     }
     default:

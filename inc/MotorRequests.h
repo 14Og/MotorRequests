@@ -15,8 +15,6 @@ using namespace jsoncons;
 #define MIN_AZIMUTH_ANGLE -361
 
 
-
-
 enum RequestCommands : uint8_t {
      motors_stop = 0,
      firmware_restart,
@@ -29,6 +27,8 @@ enum RequestCommands : uint8_t {
      decrease_elevation_val,
      zero_azimuth,
      zero_elevation,
+     home,
+     set_speed
 };  //  enum RequestCommands
 
 
@@ -42,10 +42,11 @@ private:
     CURL* _handler{nullptr};
     std::string _currentUrl{0};
     json _lastDumpedRequest{0};
-    uint16_t _vel{0};
-    uint16_t _acc{0};
+    uint16_t _maxVel{0};
+    uint16_t _maxAcc{0};
     bool _isBusy{false};
 
+private:
 
     void EndSession();
     void ParseKinematicParams();
@@ -70,7 +71,9 @@ private:
     void DecreaseElevationVal(float position);
     void ZeroAzimuth();
     void ZeroElevation();
-
+    void Home();
+    void SetSpeed(const float degPerSec);
+    
     bool Probe();
 
 public:
@@ -83,6 +86,8 @@ public:
     void SetCommand(const RequestCommands command, const float value);
     void GridCalibration(const float azimuth, const float elevation);
     void GetCurrentPositionRequest();
+    void PerformDirectRequest(std::string url);
+
 
     inline float GetAzVal() {
         return _azimuthVal;
